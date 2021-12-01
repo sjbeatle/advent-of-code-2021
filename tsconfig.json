@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonJS",
+    "noImplicitAny": true,
+    "lib": ["es6", "dom", "es2020", "esnext.bigint"],
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outDir": "build",
+    "downlevelIteration": true,
+    "target":"ES2020"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
