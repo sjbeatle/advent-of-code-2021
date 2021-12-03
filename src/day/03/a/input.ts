@@ -13,7 +13,7 @@ export const example = [
   '01010',
 ];
 
-export const report = [
+export const diagnosticsReport = [
   '101011111001',
   '111111011110',
   '010000111100',
