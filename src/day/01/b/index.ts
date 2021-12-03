@@ -10,3 +10,5 @@ for (let index = 3; index < measurements.length; index++) {
 }
 
 console.log(inc, ' sliding measurements are larger than the previous measurement');
+// answer 1130
+// example answer 5

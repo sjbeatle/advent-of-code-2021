@@ -9,3 +9,5 @@ for (let i = 0; i < measurements.length; i++) {
 }
 
 console.log(inc, ' measurements are larger than the previous measurement');
+// answer 1167
+// example answer 7

@@ -45,3 +45,5 @@ commands.forEach(c => {
 const multiple = position.h[i] * position.d[i];
 
 console.log('The final horizontal position multiplied by the final depth is', multiple);
+// answer 1488311643
+// example answer 900
