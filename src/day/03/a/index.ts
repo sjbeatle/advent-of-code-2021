@@ -6,17 +6,17 @@ import {
 
 /* Helper functions
 -----------------------------------------------*/
-function getRates(matrix: string[]) {
-  const oneBitTotals = new Array(matrix[0].length).fill(0);
+function getRates(report: string[]) {
+  const oneBitTotals = new Array(report[0].length).fill(0);
 
-  for (let i = 0; i < matrix.length; i++) {
+  for (let i = 0; i < report.length; i++) {
     for (let j = 0; j < oneBitTotals.length; j++) {
-      if (matrix[i][j] === '1')
+      if (report[i][j] === '1')
         oneBitTotals[j]++;
     }
   }
 
-  const rate = oneBitTotals.map(t => t > matrix.length / 2 ? 0 : 1).join('');
+  const rate = oneBitTotals.map(t => t > report.length / 2 ? 0 : 1).join('');
   const inverseRate = rate.split('').map(d => 1 - parseInt(d, 10)).join('');
 
   return [rate, inverseRate];

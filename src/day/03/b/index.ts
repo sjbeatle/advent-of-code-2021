@@ -10,7 +10,7 @@ function isOneCommon(matrix: string[], index: number): boolean {
   return oneBitTotal >= (matrix.length / 2);
 }
 
-function findRating(report: string[], getInverse = false): string {
+function getRating(report: string[], getInverse = false): string {
   let filteredReport = [...report];
   let i = 0;
 
@@ -26,8 +26,8 @@ function findRating(report: string[], getInverse = false): string {
 
 /* Answer
 -----------------------------------------------*/
-const oxygenRating = parseInt(findRating(diagnosticsReport), 2);
-const co2Rating = parseInt(findRating(diagnosticsReport, true), 2);
+const oxygenRating = parseInt(getRating(diagnosticsReport), 2);
+const co2Rating = parseInt(getRating(diagnosticsReport, true), 2);
 const lifeSupportRating = oxygenRating * co2Rating;
 
 console.log('The life support rating of the submarine is', lifeSupportRating);
