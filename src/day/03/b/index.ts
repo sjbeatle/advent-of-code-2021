@@ -5,9 +5,9 @@ import {
 
 /* Helper functions
 -----------------------------------------------*/
-function commonBit(matrix: string[], index: number): number {
+function isOneCommon(matrix: string[], index: number): boolean {
   const oneBitTotal = matrix.reduce((a, b) => b[index] === '1' ? ++a : a, 0);
-  return oneBitTotal >= (matrix.length / 2) ? 1 : 0;
+  return oneBitTotal >= (matrix.length / 2);
 }
 
 function findRating(report: string[], getInverse = false): string {
@@ -15,9 +15,9 @@ function findRating(report: string[], getInverse = false): string {
   let i = 0;
 
   while (filteredReport.length > 1) {
-    const mostCommon = commonBit(filteredReport, i);
+    const mostCommon = isOneCommon(filteredReport, i) ? 1 : 0;
     const filterParam = getInverse ? 1 - mostCommon : mostCommon;
-    filteredReport = filteredReport.filter(b => b[i] === String(filterParam));
+    filteredReport = filteredReport.filter(b => parseInt(b[i], 10) === filterParam);
     i++;
   }
 

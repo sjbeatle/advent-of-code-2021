@@ -16,8 +16,8 @@ function getRates(matrix: string[]) {
     }
   }
 
-  const rate = oneBitTotals.map(t => t > matrix.length / 2 ? '0' : '1').join('');
-  const inverseRate = rate.split('').map(d => String(1 - (d as any))).join('');
+  const rate = oneBitTotals.map(t => t > matrix.length / 2 ? 0 : 1).join('');
+  const inverseRate = rate.split('').map(d => 1 - parseInt(d, 10)).join('');
 
   return [rate, inverseRate];
 }
