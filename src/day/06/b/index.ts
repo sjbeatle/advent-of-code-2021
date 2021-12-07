@@ -5,7 +5,7 @@ import {
 const days = 256;
 const adultTimer = 6;
 const childTimer = 8;
-const timerCounts: { [key: string]: number } = {};
+const timerCounts: Record<number, number> = {};
 
 // initialize counts
 for (let i = 0; i <= childTimer; i++) {
@@ -29,7 +29,7 @@ for (let i = 0; i < days; i++) {
   );
 }
 
-const totalLanternfish = Object.keys(timerCounts).reduce((a, b) => a + timerCounts[b], 0);
+const totalLanternfish = Object.values(timerCounts).reduce((a, b) => a + b);
 
 console.log(`There are ${totalLanternfish} lanternfish after 256 days.`);
 
