@@ -43,10 +43,9 @@ class Patterns {
   }
 }
 
-
 class Pattern {
   signals: string[];
-  display: string[];
+  digits: string[];
   sixSegmentSignals: string[];
   fiveSegmentSignals: string[];
   signalOneSegments: string;
@@ -58,9 +57,9 @@ class Pattern {
   constructor(input: string) {
     const signalsAndDisplay = input.split(' | ');
     const signals = signalsAndDisplay[0].split(' ');
-    const display = signalsAndDisplay[1].split(' ');
+    const digits = signalsAndDisplay[1].split(' ');
     this.signals = signals;
-    this.display = display;
+    this.digits = digits;
     this.fiveSegmentSignals = signals.filter(s => s.length === 5);
     this.sixSegmentSignals = signals.filter(s => s.length === 6);
     this.signalOneSegments = this.getUniqueSignalByLength(2);
@@ -73,7 +72,7 @@ class Pattern {
 
   get mappedDisplayNumber(): number {
     return parseInt(
-      this.segmentMappedDisplay
+      this.segmentMappedDigits
         .map(digit => {
           return digitMap.get(digit);
         })
@@ -82,8 +81,8 @@ class Pattern {
     );
   }
 
-  private get segmentMappedDisplay(): string[] {
-    return this.display
+  private get segmentMappedDigits(): string[] {
+    return this.digits
       .map(segments => {
         return segments
           .split('')
