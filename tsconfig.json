@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonJS",
     "noImplicitAny": true,
-    "lib": ["es6", "dom", "es2020", "esnext.bigint"],
+    "lib": ["dom", "esnext", "esnext.bigint"],
     "removeComments": true,
     "preserveConstEnums": true,
     "outDir": "build",
