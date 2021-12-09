@@ -55,9 +55,9 @@ class Pattern {
   segmentMap: Map<string, string> = new Map();
 
   constructor(input: string) {
-    const signalsAndDisplay = input.split(' | ');
-    const signals = signalsAndDisplay[0].split(' ');
-    const digits = signalsAndDisplay[1].split(' ');
+    const signalsAndDigits = input.split(' | ');
+    const signals = signalsAndDigits[0].split(' ');
+    const digits = signalsAndDigits[1].split(' ');
     this.signals = signals;
     this.digits = digits;
     this.fiveSegmentSignals = signals.filter(s => s.length === 5);
