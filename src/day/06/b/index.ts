@@ -16,7 +16,7 @@ for (let i = 0; i <= childTimer; i++) {
 timers.forEach(t => timerCounts[t] = ++timerCounts[t]);
 
 for (let i = 0; i < days; i++) {
-  let creators = timerCounts['0'];
+  let creators = timerCounts[0];
   Object.keys(timerCounts).map(k => parseInt(k, 10)).sort().forEach( // sort may not be necessary, but doesn't hurt
     t => {
       if (t + 1 > childTimer)
