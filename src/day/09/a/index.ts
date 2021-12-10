@@ -61,19 +61,12 @@ class Elevation {
   value: number;
   row: number;
   col: number;
+  neighbors: Elevation[] = [];
 
   constructor(input: number, row: number, col: number) {
     this.value = input;
     this.row = row;
     this.col = col;
-  }
-
-  private _neighbors: Elevation[] = [];
-  get neighbors() {
-    return this._neighbors;
-  }
-  set neighbors(val: Elevation[]) {
-    this._neighbors = val;
   }
 
   get isLowerThanAllNeighbors(): boolean {

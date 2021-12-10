@@ -67,27 +67,13 @@ class Elevation {
   value: number;
   row: number;
   col: number;
+  neighbors: Elevation[] = [];
+  basin: Basin;
 
   constructor(input: number, row: number, col: number) {
     this.value = input;
     this.row = row;
     this.col = col;
-  }
-
-  private _neighbors: Elevation[] = [];
-  get neighbors() {
-    return this._neighbors;
-  }
-  set neighbors(val: Elevation[]) {
-    this._neighbors = val;
-  }
-
-  private _basin: Basin;
-  get basin() {
-    return this._basin;
-  }
-  set basin(val: Basin) {
-    this._basin = val;
   }
 
   get isLowerThanAllNeighbors(): boolean {
