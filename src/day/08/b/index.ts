@@ -39,7 +39,7 @@ class Patterns {
   }
 
   displaysSum() {
-    return this.displays.reduce((a, b) => a +b);
+    return this.displays.reduce((a, b) => a + b);
   }
 }
 
@@ -132,6 +132,11 @@ class Pattern {
   }
 
   private segmentMapFor(segment: Segments): string {
+    const mapping = this.getSegmentMapKeyByValue(segment);
+
+    if (mapping)
+      return mapping;
+
     const methods = {
       a: this.aSegmentMap,
       b: this.bSegmentMap,
@@ -141,10 +146,6 @@ class Pattern {
       f: this.fSegmentMap,
       g: this.gSegmentMap,
     };
-    const mapping = this.getSegmentMapKeyByValue(segment);
-
-    if (mapping)
-      return mapping;
 
     return methods[segment].call(this);
   }
