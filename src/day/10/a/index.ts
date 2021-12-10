@@ -2,25 +2,14 @@ import {
   navigationSubsystemInput,
 } from './input';
 
-enum Open {
-  '[' = '[',
-  '{' = '{',
-  '(' = '(',
-  '<' = '<',
-}
-
-enum Close {
-  ']' = ']',
-  '}' = '}',
-  ')' = ')',
-  '>' = '>',
-}
+const close = [
+  ']',
+  '}',
+  ')',
+  '>',
+]
 
 const tagMap = new Map([
-  ['[', ']'],
-  ['{', '}'],
-  ['(', ')'],
-  ['<', '>'],
   [']', '['],
   ['}', '{'],
   [')', '('],
@@ -28,10 +17,10 @@ const tagMap = new Map([
 ]);
 
 const points = new Map([
-  [Close[')'], 3],
-  [Close[']'], 57],
-  [Close['}'], 1197],
-  [Close['>'], 25137],
+  [')', 3],
+  [']', 57],
+  ['}', 1197],
+  ['>', 25137],
 ]);
 
 class NavigationSubsystem {
@@ -52,7 +41,7 @@ class NavigationSubsystem {
 
 class Line {
   syntax: string;
-  syntaxError: Close;
+  syntaxError: string;
 
   constructor(line: string) {
     this.syntax = line;
@@ -60,23 +49,23 @@ class Line {
   }
 
   private read() {
-    const track: string[] = [];
+    const sequence: string[] = [];
     this.syntax
       .split('')
       .some((c, i) => {
         if (i === 0) {
-          track.push(c);
+          sequence.push(c);
           return;
         }
 
-        if (c in Close) {
-          const prev = track.pop();
+        if (close.includes(c)) {
+          const prev = sequence.pop();
           if (tagMap.get(c) !== prev) {
-            this.syntaxError = c as Close;
+            this.syntaxError = c;
             return true;
           }
         } else {
-          track.push(c);
+          sequence.push(c);
         }
       });
   }

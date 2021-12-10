@@ -2,19 +2,12 @@ import {
   navigationSubsystemInput,
 } from './input';
 
-enum Open {
-  '[' = '[',
-  '{' = '{',
-  '(' = '(',
-  '<' = '<',
-}
-
-enum Close {
-  ']' = ']',
-  '}' = '}',
-  ')' = ')',
-  '>' = '>',
-}
+const close = [
+  ']',
+  '}',
+  ')',
+  '>',
+];
 
 const tagMap = new Map([
   ['[', ']'],
@@ -28,91 +21,91 @@ const tagMap = new Map([
 ]);
 
 const points = new Map([
-  [Close[')'], 3],
-  [Close[']'], 57],
-  [Close['}'], 1197],
-  [Close['>'], 25137],
+  [')', 1],
+  [']', 2],
+  ['}', 3],
+  ['>', 4],
 ]);
 
 class NavigationSubsystem {
   lines: Line[];
 
   constructor(input: string) {
-    this.lines = input.split('\n').map(l => new Line(l));
-    this.readLines();
+    const lines = input.split('\n').map(l => new Line(l));
+    this.lines = this.removeCorruptLine(lines);
   }
 
-  private readLines() {
-    this.lines.forEach(l => l.read());
+  private removeCorruptLine(lines: Line[]): Line[] {
+    return lines.filter(l => !l.corrupted);
   }
 
-  get corruptLines(): Line[] {
-    return this.lines.filter(l => l.corrupted);
+  get autocompleteScores(): number[] {
+    return this.lines
+      .map(l => l.autocompleteScore)
+      .sort((a, b) => a > b ? 1 : -1);
   }
 
-  get totalSyntaxErrorScore(): number {
-    return this.corruptLines.reduce((a, b) => a + b.errorPoints, 0);
+  get middleAutoCompleteScore(): number {
+    const scores = this.autocompleteScores;
+    const middleIndex = Math.floor(scores.length / 2);
+
+    return scores[middleIndex];
   }
 }
 
 class Line {
   syntax: string;
-  syntaxError: Close;
-  chunks: Chunk[];
+  syntaxError: string;
+  incompleteSequence: string[];
 
   constructor(line: string) {
     this.syntax = line;
+    this.read();
   }
 
-  read() {
-    const track: string[] = [];
-    this.syntax.split('').some((c, i) => {
-      if (i === 0) {
-        track.push(c);
-        return;
-      }
-
-      if (c in Close) {
-        const prev = track.pop();
-        if (tagMap.get(c) !== prev) {
-          this.syntaxError = c as Close;
-          return true;
+  private read() {
+    const sequence: string[] = [];
+    this.syntax
+      .split('')
+      .some((c, i) => {
+        if (i === 0) {
+          sequence.push(c);
+          return;
         }
-      } else {
-        track.push(c);
-      }
-    });
 
-    return this;
+        if (close.includes(c)) {
+          const prev = sequence.pop();
+          if (tagMap.get(c) !== prev) {
+            this.syntaxError = c;
+            return true;
+          }
+        } else {
+          sequence.push(c);
+        }
+      });
+    this.incompleteSequence = sequence;
   }
 
-  get length() {
-    return this.syntax.length;
+  get completionSequence(): string[] {
+    if (this.corrupted)
+      return [];
+
+    return this.incompleteSequence
+      .map(c => tagMap.get(c))
+      .reverse();
   }
 
-  get corrupted() {
+  get corrupted(): boolean {
     return !!this.syntaxError;
   }
 
-  get errorPoints() {
-    return points.get(this.syntaxError);
+  get autocompleteScore(): number {
+    return this.completionSequence
+      .reduce((a, b) => (a * 5) + points.get(b), 0);
   }
 }
 
-class Chunk {
-  openTag: string;
-  closeTag: string;
-  content: string;
+console.log(`The middle autocomplete score is ${new NavigationSubsystem(navigationSubsystemInput).middleAutoCompleteScore}`);
 
-  constructor(chunk: string) {
-    const chunkChars = chunk.split('');
-    this.openTag = chunkChars.shift();
-    this.closeTag = chunkChars.pop();
-    this.content = chunkChars.join('');
-  }
-}
-
-console.log(`The total syntax error score is ${new NavigationSubsystem(navigationSubsystemInput).totalSyntaxErrorScore}`);
-
-// answer 265527
-// example answer 26397
+// answer 3969823589
+// example answer 288957
