@@ -8,47 +8,48 @@ class HeightMap {
   constructor(input: string) {
     input
       .split('\n')
-      .map(
-      (r, ri) => r
+      .forEach(
+        (r, ri) => r
           .split('')
-          .map(
+          .forEach(
             (c, ci) =>
               this.elevations.push(new Elevation(parseInt(c, 10), ri, ci)),
           ),
       );
 
-    this.getAllNeighborsForAllElevations();
+    this.generateElevationsNeighbors();
   }
 
-  private getAllNeighborsForAllElevations() {
-    this.elevations.forEach(e => {
-      const neighbors: Elevation[] = [];
-      neighbors.push(this.getTopNeighbor(e));
-      neighbors.push(this.getRightNeighbor(e));
-      neighbors.push(this.getBottomNeighbor(e));
-      neighbors.push(this.getLeftNeighbor(e));
-      e.setNeighbors(neighbors.filter(n => !!n));
-    });
+  private generateElevationsNeighbors() {
+    this.elevations
+      .forEach(e => {
+        e.neighbors = [
+          this.findElevationTopNeighbor(e),
+          this.findElevationRightNeighbor(e),
+          this.findElevationBottomNeighbor(e),
+          this.findElevationLeftNeighbor(e),
+        ].filter(n => !!n);
+      });
   }
 
-  getTopNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row - 1, elevation.col);
-  }
-
-  getRightNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row, elevation.col + 1);
-  }
-
-  getBottomNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row + 1, elevation.col);
-  }
-
-  getLeftNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row, elevation.col - 1);
-  }
-
-  getElevation(ri: number, ci: number): Elevation {
+  private findElevation(ri: number, ci: number): Elevation {
     return this.elevations.find(e => e.row === ri && e.col === ci);
+  }
+
+  private findElevationTopNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row - 1, elevation.col);
+  }
+
+  private findElevationRightNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row, elevation.col + 1);
+  }
+
+  private findElevationBottomNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row + 1, elevation.col);
+  }
+
+  private findElevationLeftNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row, elevation.col - 1);
   }
 
   get lowestElevations(): Elevation[] {
@@ -60,7 +61,6 @@ class Elevation {
   value: number;
   row: number;
   col: number;
-  neighbors: Elevation[] = [];
 
   constructor(input: number, row: number, col: number) {
     this.value = input;
@@ -68,8 +68,12 @@ class Elevation {
     this.col = col;
   }
 
-  setNeighbors(neighbors: Elevation[]) {
-    this.neighbors = neighbors;
+  private _neighbors: Elevation[] = [];
+  get neighbors() {
+    return this._neighbors;
+  }
+  set neighbors(val: Elevation[]) {
+    this._neighbors = val;
   }
 
   get isLowerThanAllNeighbors(): boolean {

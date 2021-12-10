@@ -4,71 +4,61 @@ import {
 
 class HeightMap {
   elevations: Elevation[] = [];
-  basinSources: Elevation[];
+  basins: Basin[] = [];
 
   constructor(input: string) {
     input
       .split('\n')
-      .map(
-      (r, ri) => r
+      .forEach(
+        (r, ri) => r
           .split('')
-          .map(
+          .forEach(
             (c, ci) =>
               this.elevations.push(new Elevation(parseInt(c, 10), ri, ci)),
           ),
       );
 
-    this.getAllNeighborsForAllElevations();
-    this.basinSources = this.lowestElevations;
-    this.basinSources.forEach(s => this.getBasinFromElevation(s));
+    this.generateElevationsNeighbors();
+    this.generateBasins();
   }
 
-  getBasinFromElevation(elevation: Elevation, source?: Elevation) {
-    if (elevation.isInBasin || elevation.value === 9)
-      return;
-
-    const basinSource = source || elevation;
-
-    elevation.basinSource = basinSource;
-    basinSource.basin.push(elevation);
-
-    elevation.neighbors.forEach(n => this.getBasinFromElevation(n, elevation.basinSource));
-
-    return basinSource;
+  private generateBasins() {
+    this.lowestElevations.forEach(e => this.basins.push(new Basin(e)));
   }
 
-  private getAllNeighborsForAllElevations() {
-    this.elevations.forEach(e => {
-      const neighbors: Elevation[] = [];
-      neighbors.push(this.getTopNeighbor(e));
-      neighbors.push(this.getRightNeighbor(e));
-      neighbors.push(this.getBottomNeighbor(e));
-      neighbors.push(this.getLeftNeighbor(e));
-      e.setNeighbors(neighbors.filter(n => !!n));
-    });
+  private generateElevationsNeighbors() {
+    this.elevations
+      .forEach(e => {
+        e.neighbors = [
+          this.findElevationTopNeighbor(e),
+          this.findElevationRightNeighbor(e),
+          this.findElevationBottomNeighbor(e),
+          this.findElevationLeftNeighbor(e),
+        ].filter(n => !!n);
+      });
   }
 
-  getTopNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row - 1, elevation.col);
-  }
-
-  getRightNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row, elevation.col + 1);
-  }
-
-  getBottomNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row + 1, elevation.col);
-  }
-
-  getLeftNeighbor(elevation: Elevation): Elevation {
-    return this.getElevation(elevation.row, elevation.col - 1);
-  }
-
-  getElevation(ri: number, ci: number): Elevation {
+  private findElevation(ri: number, ci: number): Elevation {
     return this.elevations.find(e => e.row === ri && e.col === ci);
   }
 
-  get lowestElevations(): Elevation[] {
+  private findElevationTopNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row - 1, elevation.col);
+  }
+
+  private findElevationRightNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row, elevation.col + 1);
+  }
+
+  private findElevationBottomNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row + 1, elevation.col);
+  }
+
+  private findElevationLeftNeighbor(elevation: Elevation): Elevation {
+    return this.findElevation(elevation.row, elevation.col - 1);
+  }
+
+  private get lowestElevations(): Elevation[] {
     return this.elevations.filter(e => e.isLowerThanAllNeighbors);
   }
 }
@@ -77,9 +67,6 @@ class Elevation {
   value: number;
   row: number;
   col: number;
-  neighbors: Elevation[] = [];
-  basinSource: Elevation;
-  basin: Elevation[] = [];
 
   constructor(input: number, row: number, col: number) {
     this.value = input;
@@ -87,16 +74,20 @@ class Elevation {
     this.col = col;
   }
 
-  setNeighbors(neighbors: Elevation[]) {
-    this.neighbors = neighbors;
+  private _neighbors: Elevation[] = [];
+  get neighbors() {
+    return this._neighbors;
+  }
+  set neighbors(val: Elevation[]) {
+    this._neighbors = val;
   }
 
-  get isInBasin() {
-    return !!this.basinSource;
+  private _basin: Basin;
+  get basin() {
+    return this._basin;
   }
-
-  get isBasinSource() {
-    return this.basinSource === this;
+  set basin(val: Basin) {
+    this._basin = val;
   }
 
   get isLowerThanAllNeighbors(): boolean {
@@ -111,18 +102,57 @@ class Elevation {
     return isLowest;
   }
 
-  get riskLevel(): number {
-    return this.value + 1;
+  get hasBasin() {
+    return !!this.basin;
+  }
+}
+
+class Basin {
+  source: Elevation;
+  elevations: Elevation[];
+
+  constructor(source: Elevation) {
+    this.source = source;
+    this.elevations = [source];
+
+    this.generateBasinFlowElevations();
+  }
+
+  private generateBasinFlowElevations(sourceElevation?: Elevation) {
+    if (
+      sourceElevation
+      && (sourceElevation.hasBasin || sourceElevation.value === 9)
+    )
+      return;
+
+    let elevation = sourceElevation;
+    if (elevation) {
+      this.add(elevation);
+    } else { // initial recursion
+      elevation = this.source;
+    }
+
+    elevation.basin = this;
+    elevation.neighbors.forEach(n => this.generateBasinFlowElevations(n));
+  }
+
+  add(elevation: Elevation) {
+    this.elevations.push(elevation);
+  }
+
+  get size() {
+    return this.elevations.length;
   }
 }
 
 const startTime = new Date().getTime();
 const heightMap = new HeightMap(heightMapInput);
-const threeLargestBasinsProduct = heightMap.basinSources
-  .map(s => s.basin.length)
-  .sort((a, b) => a > b ? 1 : -1)
-  .slice(-3)
-  .reduce((a, b) => a * b);
+const threeLargestBasinsProduct = heightMap
+  .basins
+    .map(b => b.size)
+    .sort((a, b) => a > b ? 1 : -1)
+    .slice(-3)
+    .reduce((a, b) => a * b);
 const elapsedTime = new Date().getTime() - startTime;
 
 console.log(`The product of the three largest basins is ${threeLargestBasinsProduct}`);
