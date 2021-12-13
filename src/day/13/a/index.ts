@@ -25,12 +25,8 @@ class TransparentPaper {
       .forEach(p => {
         const x = parseInt(p.split(',')[0], 10);
         const y = parseInt(p.split(',')[1], 10);
-        this.markPoint(x, y);
+        this.setPoint(1, x, y);
       });
-  }
-
-  markPoint(x: number, y: number) {
-    this.matrix[y][x] = 1;
   }
 
   setPoint(val: number, x: number, y: number) {
@@ -56,29 +52,30 @@ class TransparentPaper {
     this.matrix.pop();
 
     rMatrix
-      .forEach(((r, ri) => {
+      .forEach((r, ri) => {
         r.forEach((c, ci) => {
           this.setPoint(c, ci, f - (ri + 1));
         });
-      }));
+      });
   }
 
   verticalFold(f: number) {
-    this.matrix
-      .forEach((r, ri) => {
-        r.forEach((c, ci) => {
-          if (ci > f) {
-            this.setPoint(c, f - (ci - f), ri)
-          }
-        });
-      })
+    for (let ri = 0; ri < this.rowCount; ri++) {
+      for (let ci = f; ci < this.colCount; ci++) {
+        this.setPoint(this.matrix[ri][ci], f - (ci - f), ri);
+      }
+    }
 
     // remove folded cols
-    this.matrix.forEach(r => {
-      for (let i = 0; i <= f; i++) {
-        r.pop();
-      }
-    });
+    this.matrix.forEach(r => r.splice(f));
+  }
+
+  get rowCount(): number {
+    return this.matrix.length;
+  }
+
+  get colCount(): number {
+    return this.matrix[0].length;
   }
 
   get visibleDotsCount(): number {
