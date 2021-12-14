@@ -1,5 +1,5 @@
 import {
-  awf,
+  megaman,
 } from './input';
 
 const Axis = [
@@ -139,7 +139,7 @@ class FoldedPaper {
   }
 }
 
-const tp = new FoldedPaper(awf);
+const tp = new FoldedPaper(megaman);
 console.log(`tp.output\n${tp.output}`);
 tp.unfoldNTimes(12);
 // console.log(`tp.output\n${tp.output}`);
